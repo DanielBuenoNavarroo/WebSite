@@ -1,28 +1,23 @@
 <script setup>
 import { RouterLink, RouterView, useRoute } from 'vue-router';
-import { reactive, ref, onMounted, watch } from 'vue';
+import { reactive, ref, watch } from 'vue';
 import en from './lenguages/en';
 import es from './lenguages/es';
 import SignIn from './components/SignIn.vue';
 import DownloadApp from './components/DownloadApp.vue';
 
-onMounted(() => {
-    const links = document.querySelectorAll('a');
-    links.forEach(link => {
-        link.draggable = false;
-    });
-    document.title = messages.homeTitle;
-});
+const lenguages = {
+    'en': en,
+    'es': es,
+};
 
-window.addEventListener('blur', () => {
-    document.title = messages.comeBack;
-});
-window.addEventListener('focus', () => {
-    changeTitle()
-});
+const defaultLanguageKey = Object.keys(lenguages)[0];
+const currentLanguage = ref({ value: defaultLanguageKey, messages: lenguages[defaultLanguageKey] });
 
-const currentLanguage = ref('es');
-const messages = currentLanguage.value === 'en' ? en : es;
+const changeLanguage = () => {
+    currentLanguage.value.value = currentLanguage.value.value === 'en' ? 'es' : 'en';
+    currentLanguage.value.messages = lenguages[currentLanguage.value.value];
+}
 
 const route = useRoute();
 watch(route, () => {
@@ -30,13 +25,13 @@ watch(route, () => {
 });
 
 const titles = {
-    '/': messages.homeTitle,
-    '/news': messages.newsTitle,
-    '/leaderboards': messages.topsTitle,
+    '/': currentLanguage.value.messages.homeTitle,
+    '/news': currentLanguage.value.messages.newsTitle,
+    '/leaderboards': currentLanguage.value.messages.topsTitle,
 };
 
 const changeTitle = () => {
-    const title = titles[route.path] || messages.homeTitle;
+    const title = titles[route.path] || currentLanguage.value.messages.homeTitle;
     document.title = title;
 };
 
@@ -46,39 +41,52 @@ const state = reactive({
 });
 const changeToSignIn = () => state.signIn = !state.signIn;
 const changeToDownload = () => state.download = !state.download;
+
+window.addEventListener('blur', () => {
+    document.title = currentLanguage.value.messages.comeBack;
+});
+window.addEventListener('focus', () => {
+    changeTitle()
+});
 </script>
 
 <template>
     <header>
         <div class="nav-wrapp">
-            <div class="nav-start"></div>
+            <div class="nav-start">
+                <span>
+                    <img src="/src/assets/world-icon.png" alt="" @click="changeLanguage">
+                    <p>-</p>
+                    <p>{{ currentLanguage.value }}</p>
+                </span>
+            </div>
             <nav>
                 <RouterLink to="/" class="nav-item" :class="{ 'active': $route.path === '/' }">
-                    {{ messages.home }}
+                    {{ currentLanguage.messages.home }}
                 </RouterLink>
                 <RouterLink to="/news" class="nav-item" :class="{ 'active': $route.path === '/news' }">
-                    {{ messages.news }}
+                    {{ currentLanguage.messages.news }}
                 </RouterLink>
                 <RouterLink to="/leaderboards" class="nav-item" :class="{ 'active': $route.path === '/leaderboards' }">
-                    {{ messages.tops }}
+                    {{ currentLanguage.messages.tops }}
                 </RouterLink>
             </nav>
             <div class="nav-end">
                 <div class="nav-sn">
                     <span @click="changeToSignIn">
-                        {{ messages.logIn }}
+                        {{ currentLanguage.messages.logIn }}
                         <img src="/src/assets/user-icon.png" alt="user-icon">
                     </span>
                 </div>
                 <span class="nav-download" @click="changeToDownload">
-                    {{ messages.download }}
+                    {{ currentLanguage.messages.download }}
                 </span>
             </div>
         </div>
     </header>
     <main>
         <div class="signIn-overlay" v-if="state.signIn">
-            <SignIn :lenguage="currentLanguage" @change-state="changeToSignIn" />
+            <SignIn @change-state="changeToSignIn" />
         </div>
         <div class="download-overlay" v-if="state.download" @click="changeToDownload">
             <DownloadApp />
@@ -89,8 +97,7 @@ const changeToDownload = () => state.download = !state.download;
 
 <style scoped lang="scss">
 .nav-wrapp {
-    width: 100%;
-    min-width: 1760px;
+    width: 100vw;
     height: 57px;
     position: fixed;
     top: 0;
@@ -100,20 +107,38 @@ const changeToDownload = () => state.download = !state.download;
     border-bottom: 1px solid #363636;
     z-index: 997;
     display: flex;
-    justify-content: flex-start;
+    justify-content: space-between;
     align-items: center;
     overflow-y: hidden;
     opacity: 1;
 
     .nav-start {
-        width: 20%;
+        span {
+            min-width: 355px;
+            height: 100%;
+            margin-left: 30px;
+            display: inline-flex;
+            align-items: center;
+            user-select: none;
+
+            img {
+                width: 25px;
+                cursor: pointer;
+            }
+
+            p {
+                margin-left: 10px;
+                color: white;
+            }
+
+        }
+
     }
 
     nav {
-        width: 60%;
         height: 57px;
         color: #747474;
-        display: flex;
+        display: inline-flex;
         justify-content: center;
         align-items: center;
 
@@ -129,7 +154,6 @@ const changeToDownload = () => state.download = !state.download;
             padding: 0 30px;
             color: #fff;
             text-decoration: none;
-
             user-select: none;
             cursor: pointer;
 
@@ -145,13 +169,12 @@ const changeToDownload = () => state.download = !state.download;
     }
 
     .nav-end {
-        width: 20%;
+        min-width: 355px;
         height: 50px;
         display: inline-flex;
         justify-content: flex-end;
 
         .nav-sn {
-            min-width: 150px;
             display: inline-flex;
             user-select: none;
 
@@ -184,7 +207,7 @@ const changeToDownload = () => state.download = !state.download;
             text-align: center;
             font-size: 18px;
             color: #121212;
-            font-weight: 900;
+            font-weight: 700;
             cursor: pointer;
             text-decoration: none;
             display: inline-flex;

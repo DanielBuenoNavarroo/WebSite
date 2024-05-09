@@ -1,26 +1,27 @@
 <script setup>
-import { reactive } from 'vue';
-import es from '@/lenguages/es';
-import en from '@/lenguages/en';
+import { reactive, ref, watch } from 'vue';
 
+const emit = defineEmits(['change-state'])
 
-const props = defineProps(
-    {
-        lenguage: {
-            type: String,
-            required: true,
-            default: 'en'
-        }
-    }
-);
+const handleClick = () => {
+    emit('change-state')
+}
 
-const messages = props.lenguage === 'en' ? en : es;
+const email = ref('')
+const password = ref('')
+const disabled = ref(true)
+const isEnabled = () => {
+    if (email.value === '' || password.value === '') disabled.value = true
+    else disabled.value = false
+    console.log(disabled.value)
+};
+watch(email, isEnabled)
+watch(password, isEnabled)
 
 const state = reactive({
     login: true,
     signIn: false
 })
-
 const changeState = () => {
     state.signIn = !state.signIn;
     state.login = !state.login;
@@ -30,12 +31,23 @@ const changeState = () => {
 <template>
     <div class="web-login" v-if="state.login">
         <div class="logIn-wrapper">
-            <span>{{ messages.logIn }}</span>
-            <form>
-
+            <form action="">
+                <h2>Login</h2>
+                <div class="inputBox">
+                    <input type="email" required placeholder="Usuario/Correo electrónico" v-model="email">
+                    <p v-if="email === ''">No puede quedar en blanco</p>
+                </div>
+                <div class="inputBox">
+                    <input type="password" required placeholder="Contraseña" v-model="password">
+                    <p v-if="password === ''">No puede quedar en blanco</p>
+                </div>
+                <button :disabled="disabled">Log In</button>
+                <div class="register">
+                    <p @click="changeState">Don't have a account? Register</p>
+                </div>
             </form>
         </div>
-        <button class="close" @click="$emit('changeState')"></button>
+        <button class="close" @click="handleClick" />
     </div>
     <div class="web-signIn" v-if="state.signIn">
         <div class="signIn-wrapper">
@@ -46,10 +58,12 @@ const changeState = () => {
 
 <style scoped lang="scss">
 .web-login {
-    width: 450px;
-    height: 550px;
-    background-color: rgba(255, 255, 255, 1);
-    border-radius: 28px;
+    width: 500px;
+    height: 600px;
+    background: transparent;
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba($color: #000, $alpha: .7);
+    border-radius: 25px;
     display: flex;
     flex-direction: column;
     position: absolute;
@@ -61,15 +75,53 @@ const changeState = () => {
         width: 100%;
         height: 100%;
         display: flex;
-        padding: 32px !important;
+        padding: 32px;
         word-break: break-all;
 
-        span {
+        form {
             width: 100%;
-            text-align: center;
-            font-size: 27px;
-            font-weight: 900;
+            height: 100%;
+
+            h2 {
+                width: 100%;
+                text-align: center;
+                font-size: 27px;
+                font-weight: 900;
+                margin-bottom: 10px;
+                color: #ffffff;
+            }
+
+            .inputBox {
+
+                input {
+                    width: 100%;
+                    height: 50px;
+                    border-radius: 12px;
+                    padding-left: 10px;
+                    font-size: 17px;
+                    margin-top: 20px;
+
+                    &:focus {
+                        outline: none;
+                        border: 2px solid rgba($color: #be3f3f, $alpha: 1.0);
+                    }
+                }
+
+                p {
+                    height: 20px;
+                    color: #be3f3f;
+                }
+            }
+
+            button {
+                width: 100%;
+                height: 50px;
+                border-radius: 12px;
+                margin-top: 50px;
+            }
+
         }
+
     }
 
     .close {

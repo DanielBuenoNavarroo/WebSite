@@ -3,7 +3,7 @@ export default {
   home: 'Home',
   news: 'News',
   tops: 'Leaderboards',
-  logIn: 'Sign in',
+  logIn: 'Log In',
   download: 'Download now',
   logingIn: 'Login',
   signingIn: 'Sign-In',
