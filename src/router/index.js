@@ -12,7 +12,7 @@ const router = createRouter({
     {
       path: '/news',
       name: 'news',
-      component: () => import('../views/HomeView.vue')
+      component: () => import('../views/NewsView.vue')
     },
     {
       path: '/leaderboards',

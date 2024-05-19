@@ -10,7 +10,9 @@
             </div>
         </div>
         <div class="home-view"></div>
-        <div class="bottom-view"></div>
+        <div class="bottom-view">
+            
+        </div>
     </div>
 </template>
 
@@ -67,17 +69,22 @@
         height: 100vh;
         background-color: #252525;
         scroll-snap-align: center;
-        background-image: url('/src/assets/background.png');
+        background-image: url('/src/assets/background-home.png');
         background-repeat: no-repeat;
         background-size: cover;
         background-position: center center;
     }
 
     .bottom-view {
-        width: 100%;
-        height: 1400px;
-        background-color: #6d5a5a;
+        width: 100vw;
+        height: 100vh;
+        background-color: #252525;
         scroll-snap-align: center;
+        background-image: url('/src/assets/background-home-2.jpg');
+        background-repeat: no-repeat;
+        background-size: cover;
+        display: flex;
     }
+
 }
 </style>

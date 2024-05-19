@@ -1,22 +1,53 @@
 <script setup>
-import { reactive, ref, watch } from 'vue';
+import { reactive, ref, computed } from 'vue';
+import { registerRequest, loginRequest } from '@/api/auth.js';
+import { useUserStore } from '@/stores/user.js';
+
+const authStore = useUserStore();
 
 const emit = defineEmits(['change-state'])
-
 const handleClick = () => {
     emit('change-state')
 }
 
-const email = ref('')
-const password = ref('')
-const disabled = ref(true)
-const isEnabled = () => {
-    if (email.value === '' || password.value === '') disabled.value = true
-    else disabled.value = false
-    console.log(disabled.value)
-};
-watch(email, isEnabled)
-watch(password, isEnabled)
+// Login form
+const emailLogin = ref('');
+const passwordLogin = ref('');
+const disabledLogin = computed(() =>
+    emailLogin.value === '' ||
+    passwordLogin.value === ''
+);
+const handleSubmitLogin = async (event) => {
+    event.preventDefault();
+    const user = {
+        email: emailLogin.value,
+        password: passwordLogin.value
+    }
+    const res = await loginRequest(user)
+    authStore.login_register(res.data)
+}
+
+// Register form
+const emailRegister = ref('');
+const passwordRegister = ref('');
+const usernameRegister = ref('');
+const disabledRegister = computed(() =>
+    emailRegister.value === '' ||
+    passwordRegister.value === '' ||
+    usernameRegister.value === ''
+);
+const handleSubmitRegister = async (event) => {
+    event.preventDefault();
+    const user = {
+        username: usernameRegister.value,
+        email: emailRegister.value,
+        password: passwordRegister.value
+    }
+    console.log(user)
+    const res = await registerRequest(user)
+    console.log(res)
+    if (res.status == 200) emit('change-state')
+}
 
 const state = reactive({
     login: true,
@@ -29,35 +60,51 @@ const changeState = () => {
 </script>
 
 <template>
-    <div class="web-login" v-if="state.login">
-        <div class="logIn-wrapper">
-            <form action="">
+    <div class="login-register-wrapper">
+        <div class="logIn-wrapper" v-if="state.login">
+            <form @submit="handleSubmitLogin">
                 <h2>Login</h2>
                 <div class="inputBox">
-                    <input type="email" required placeholder="Usuario/Correo electrónico" v-model="email">
-                    <p v-if="email === ''">No puede quedar en blanco</p>
+                    <input type="email" required placeholder="Usuario/Correo electrónico" v-model="emailLogin" id="emailLogin">
+                    <p v-if="emailLogin === ''">No puede quedar en blanco</p>
                 </div>
                 <div class="inputBox">
-                    <input type="password" required placeholder="Contraseña" v-model="password">
-                    <p v-if="password === ''">No puede quedar en blanco</p>
+                    <input type="password" required placeholder="Contraseña" v-model="passwordLogin" id="passwordLogin">
+                    <p v-if="passwordLogin === ''">No puede quedar en blanco</p>
                 </div>
-                <button :disabled="disabled">Log In</button>
-                <div class="register">
+                <button :disabled="disabledLogin">Log In</button>
+                <div class="changeSignIn">
                     <p @click="changeState">Don't have a account? Register</p>
                 </div>
             </form>
         </div>
-        <button class="close" @click="handleClick" />
-    </div>
-    <div class="web-signIn" v-if="state.signIn">
-        <div class="signIn-wrapper">
-            <span>{{ messages.signIn }}</span>
+        <div class="signIn-wrapper" v-if="state.signIn">
+            <form @submit="handleSubmitRegister">
+                <h2>Register</h2>
+                <div class="inputBox">
+                    <input type="text" required placeholder="Nombre de usuario" v-model="usernameRegister" id="usernameRegister">
+                    <p v-if="usernameRegister === ''">No puede quedar en blanco</p>
+                </div>
+                <div class="inputBox">
+                    <input type="email" required placeholder="Usuario/Correo electrónico" v-model="emailRegister" id="emailRegister">
+                    <p v-if="emailRegister === ''">No puede quedar en blanco</p>
+                </div>
+                <div class="inputBox">
+                    <input type="password" required placeholder="Contraseña" v-model="passwordRegister" id="passwordRegister">
+                    <p v-if="passwordRegister === ''">No puede quedar en blanco</p>
+                </div>
+                <button :disabled="disabledRegister">Register</button>
+                <div class="changeLogin">
+                    <p @click="changeState">Already have an account? LogIn</p>
+                </div>
+            </form>
         </div>
+        <button type="button" class="close" @click="handleClick" />
     </div>
 </template>
 
 <style scoped lang="scss">
-.web-login {
+.login-register-wrapper {
     width: 500px;
     height: 600px;
     background: transparent;
@@ -71,7 +118,7 @@ const changeState = () => {
     left: 50%;
     transform: translate(-50%, -50%);
 
-    .logIn-wrapper {
+    .logIn-wrapper, .signIn-wrapper {
         width: 100%;
         height: 100%;
         display: flex;
@@ -100,6 +147,7 @@ const changeState = () => {
                     padding-left: 10px;
                     font-size: 17px;
                     margin-top: 20px;
+                    border: 1px solid #beb63f;
 
                     &:focus {
                         outline: none;
@@ -108,9 +156,12 @@ const changeState = () => {
                 }
 
                 p {
+                    margin-top: 3px;
+                    margin-left: 10px;
                     height: 20px;
                     color: #be3f3f;
                 }
+
             }
 
             button {
@@ -118,6 +169,13 @@ const changeState = () => {
                 height: 50px;
                 border-radius: 12px;
                 margin-top: 50px;
+                cursor: pointer;
+            }
+
+            .changeSignIn {
+                margin-top: 20px;
+                cursor: pointer;
+                color: #beb63f;
             }
 
         }
