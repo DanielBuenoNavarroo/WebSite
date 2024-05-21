@@ -5,6 +5,7 @@ import en from './lenguages/en';
 import es from './lenguages/es';
 import SignIn from './components/SignIn.vue';
 import DownloadApp from './components/DownloadApp.vue';
+import axios from 'axios';
 
 const lenguages = {
     'en': en,
@@ -41,6 +42,25 @@ const state = reactive({
 });
 const changeToSignIn = () => state.signIn = !state.signIn;
 const changeToDownload = () => state.download = !state.download;
+const handleDownload = async () => {
+    const url = 'https://www.googleapis.com/drive/v3/files/1xPYC3FGe4P30kMSE81yhfXpGgy9l0ly7?alt=media&key=AIzaSyAJpuonY--O10Xb5n7XN6T93thMU8Kk15I';
+    try {
+        const response = await axios.get(url, {
+            responseType: 'blob',
+        });
+        const blob = new Blob([response.data], { type: response.headers['content-type'] });
+        const downloadUrl = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = downloadUrl;
+        a.download = 'setup-agileAsphalt.zip';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(downloadUrl);
+    } catch (error) {
+        console.error('Ha ocurrido un problema con la descarga:', error);
+    }
+}
 
 window.addEventListener('blur', () => {
     document.title = currentLanguage.value.messages.comeBack;
@@ -78,7 +98,7 @@ window.addEventListener('focus', () => {
                         <img src="/src/assets/user-icon.png" alt="user-icon">
                     </span>
                 </div>
-                <span class="nav-download" @click="changeToDownload">
+                <span class="nav-download" @click="handleDownload">
                     {{ currentLanguage.messages.download }}
                 </span>
             </div>
