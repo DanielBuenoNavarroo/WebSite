@@ -15,11 +15,13 @@ const getTracksMethod = async () => {
         } else {
             tracks.value.push(...res.data.tracks);
         }
-        if (tracks.value.length < 5) {
+        if (res.data.tracks.length < 5) {
             areMorePages.value = false;
+            console.log(areMorePages.value)
         }
         console.log(tracks.value)
     } catch (error) {
+        areMorePages.value = false
         console.error('Error fetching tracks:', error);
     }
 };
@@ -52,7 +54,7 @@ onBeforeMount(() => {
                     <TracksComp :track="tracksItem" />
                 </div>
             </div>
-            <div v-if="isNotEmpty && areMorePages">
+            <div v-if="areMorePages">
                 <button @click="changePage">Mostrar más</button>
             </div>
         </div>

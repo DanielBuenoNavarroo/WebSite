@@ -16,7 +16,6 @@ const getTopScores = async () => {
     try {
         const res = await getScores(props.track._id);
         scores.value = res.data;
-        console.log(scores.value)
     } catch (error) {
         console.error('Error fetching scores:', error);
     }
