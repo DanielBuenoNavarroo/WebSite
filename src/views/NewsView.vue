@@ -2,7 +2,7 @@
 import NewsComp from '@/components/NewsComp.vue';
 import NewsCompShort from '@/components/NewsCompShort.vue';
 import { getNewsRequest } from '@/api/news';
-import { onMounted, ref, nextTick } from 'vue';
+import { ref, nextTick, onBeforeMount } from 'vue';
 import { marked } from 'marked';
 
 const currentPage = ref(1);
@@ -56,7 +56,7 @@ function latestNews() {
     return news.value.slice(0, 4);
 }
 
-onMounted(() => {
+onBeforeMount(() => {
     getNews();
 });
 </script>
@@ -70,7 +70,7 @@ onMounted(() => {
                 </div>
             </div>
             <div v-if="!isNotEmpty()">
-                <h1>No hay noticias para mostrar</h1>
+                <h1 style="color: white; margin-top: 50px;">No hay noticias para mostrar</h1>
             </div>
             <div v-else class="news" v-for="(newsItem, index) in news" :key="index">
                 <NewsComp :news="newsItem" @click="changeShowNews(index, false)" />
@@ -104,7 +104,8 @@ onMounted(() => {
 .newsWrapper {
     height: 100%;
     width: 100vw;
-    background: #0f2480;
+    background: url('/src/assets/background-home-2.jpg');
+    background-size: cover;
     overflow: hidden;
 
     .news-list {
@@ -143,12 +144,20 @@ onMounted(() => {
                     padding-left: 10px;
                 }
             }
-
         }
 
         button {
-            width: 500px;
-            height: 50px;
+            width: 60vw;
+            height: 30px;
+            margin: 20px 0 50px 0;
+            color: white;
+            border: solid 1px white;
+            border-radius: 3px;
+            background-color: rgba(108, 110, 110, 0.4);
+
+            &:hover{
+                background-color: rgba(108, 110, 110, 0.8);
+            }
         }
     }
 

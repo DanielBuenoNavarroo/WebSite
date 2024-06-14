@@ -47,8 +47,12 @@ export default {
     es: {}
   },
   news: {
-    en: {},
-    es: {}
+    en: {
+      noNews: 'No news yet',
+    },
+    es: {
+      noNews: 'No hay noticias aún'
+    }
   },
   leaderBoard: {
     en: {},

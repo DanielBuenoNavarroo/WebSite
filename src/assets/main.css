@@ -1,3 +1,8 @@
+@font-face {
+  font-family: 'dumb';
+  src: url(./fonts/dum1.ttf);
+}
+
 *,
 *::before,
 *::after {

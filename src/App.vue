@@ -3,7 +3,6 @@ import { RouterLink, RouterView, useRoute } from 'vue-router'
 import { reactive, ref, watch } from 'vue'
 import axios from 'axios'
 import SignIn from './components/SignIn.vue'
-import DownloadApp from './components/DownloadApp.vue'
 import { useLenguajeStore } from './stores/lenguage'
 import { allLenguajes } from './lenguages/allLenguajes'
 import lengs from './lenguages/lengs'
@@ -42,16 +41,15 @@ const changeTitle = () => {
 }
 
 const state = reactive({
-  signIn: false,
-  download: false
+  signIn: false
 })
 
 const changeToSignIn = () => (state.signIn = !state.signIn)
-const changeToDownload = () => (state.download = !state.download)
 const handleDownload = async () => {
   const url =
     'https://www.googleapis.com/drive/v3/files/1xPYC3FGe4P30kMSE81yhfXpGgy9l0ly7?alt=media&key=AIzaSyAJpuonY--O10Xb5n7XN6T93thMU8Kk15I'
   try {
+    alert(localData.value.messages.done)
     const response = await axios.get(url, {
       responseType: 'blob'
     })
@@ -62,7 +60,6 @@ const handleDownload = async () => {
     a.download = 'setup-agileAsphalt.zip'
     document.body.appendChild(a)
     a.click()
-    alert(localData.value.messages.done)
     document.body.removeChild(a)
     window.URL.revokeObjectURL(downloadUrl)
   } catch (error) {
@@ -72,7 +69,7 @@ const handleDownload = async () => {
 }
 
 window.addEventListener('blur', () => {
-  document.title = localData.value.titles.comeback
+  document.title = localData.value.titles.comeBack
 })
 window.addEventListener('focus', () => {
   changeTitle()
@@ -105,12 +102,12 @@ window.addEventListener('focus', () => {
         </RouterLink>
       </nav>
       <div class="nav-end">
-        <div class="nav-sn">
+        <!-- <div class="nav-sn">
           <span @click="changeToSignIn">
             {{ localData.content.logIn }}
             <img src="/src/assets/user-icon.png" alt="user-icon" />
           </span>
-        </div>
+        </div> -->
         <span class="nav-download" @click="handleDownload">
           {{ localData.content.download }}
         </span>
@@ -121,10 +118,7 @@ window.addEventListener('focus', () => {
     <div class="signIn-overlay" v-if="state.signIn">
       <SignIn @change-state="changeToSignIn" />
     </div>
-    <div class="download-overlay" v-if="state.download" @click="changeToDownload">
-      <DownloadApp />
-    </div>
-    <RouterView />
+    <RouterView @download="handleDownload" />
   </main>
 </template>
 

@@ -17,7 +17,7 @@ const router = createRouter({
     {
       path: '/leaderboards',
       name: 'leaderboards',
-      component: () => import('../views/HomeView.vue')
+      component: () => import('../views/LeaderboardView.vue')
     },
   ]
 })
