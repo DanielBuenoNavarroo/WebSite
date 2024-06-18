@@ -21,6 +21,13 @@ const getTopScores = async () => {
     }
 }
 
+const handleTime = (time) => {
+    let minutes = Math.floor(time / 60);
+    let seconds = Math.floor(time % 60);
+    let millis = Math.floor((time - seconds) * 1000);
+    return `${minutes}:${seconds}:${millis.toString().substring(0, 5)}`
+}
+
 onMounted(() => {
     getTopScores();
 })
@@ -34,7 +41,7 @@ onMounted(() => {
             Top 5 scores:
             <div class="displayScores" v-if="!thereIsRecords()">No hay records existentes</div>
             <div v-else class="displayScores" v-for="(score, index) in scores" :key="index">
-                {{ index + 1 }} - {{ score.user.username }} - {{ score.score.toString().substring(0, 5) }}
+                {{ index + 1 }} - {{ score.user.username }} - {{ handleTime(score.score) }}
                 <hr style="margin: 10px 0 10px 0;">
             </div>
         </div>

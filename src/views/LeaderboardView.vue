@@ -15,11 +15,10 @@ const getTracksMethod = async () => {
         } else {
             tracks.value.push(...res.data.tracks);
         }
-        if (res.data.tracks.length < 5) {
+        if (res.data.tracks.length < 9) {
             areMorePages.value = false;
             console.log(areMorePages.value)
         }
-        console.log(tracks.value)
     } catch (error) {
         areMorePages.value = false
         console.error('Error fetching tracks:', error);
